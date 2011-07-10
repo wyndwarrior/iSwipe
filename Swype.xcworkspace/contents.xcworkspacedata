@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "container:"
+      name = "Classes">
+      <FileRef
+         location = "group:SwypeController.h">
+      </FileRef>
+      <FileRef
+         location = "group:SwypeController.m">
+      </FileRef>
+      <FileRef
+         location = "group:SwypeModel.h">
+      </FileRef>
+      <FileRef
+         location = "group:SwypeModel.m">
+      </FileRef>
+      <FileRef
+         location = "group:SwypeScribbleView.h">
+      </FileRef>
+      <FileRef
+         location = "group:SwypeScribbleView.m">
+      </FileRef>
+      <FileRef
+         location = "group:CGPointWrapper.h">
+      </FileRef>
+      <FileRef
+         location = "group:CGPointWrapper.m">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:"
+      name = "Resources">
+      <FileRef
+         location = "group:Tweak.xm">
+      </FileRef>
+      <FileRef
+         location = "group:Makefile">
+      </FileRef>
+   </Group>
+</Workspace>
