@@ -44,7 +44,6 @@
     [[SwypeController sharedInstance].kbkeys addObject:self];
     return self;
 }
-
 %end
 
 %hook SBUserInstalledApplicationIcon

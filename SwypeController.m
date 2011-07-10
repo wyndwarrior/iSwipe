@@ -52,6 +52,7 @@ static SwypeController *sharedInstance;
         if(keys.count<=1){
             [self cleanUp];
             didJustSwype = NO;
+            lastWasShift = NO;
         }else{
             [self findMatch:keys];
             didJustSwype = YES;
@@ -96,19 +97,48 @@ static SwypeController *sharedInstance;
         [[UIKeyboardImpl activeInstance] handleDelete];
         if(didJustSwype && [[[[UIKeyboardImpl activeInstance] delegate] text] length]>0)
             [[UIKeyboardImpl activeInstance] handleStringInput:@" " fromVariantKey:NO];
+        lastWasShift = NO;
         [self addInput:bestMatch];
+        matchLength = [bestMatch length];
     }
     [self cleanUp];
+    if(matches.count>1){
+        NSMutableArray *sugg = [[NSMutableArray alloc] init];
+        for(int i= 1; i<matches.count; i++)
+            [sugg addObject:[matches objectAtIndex:i]];
+        UIKeyboard *kb = [UIKeyboard activeKeyboard];
+        suggestions = [[SwypeSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:sugg delegate:self];
+        [kb.superview addSubview:suggestions];
+        [suggestions release];
+        [sugg release];
+    }
+}
+
+-(void)didSelect:(id)sender{
+    UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
+    for(int i = 0; i<matchLength; i++)
+        [kb handleDelete];
+    [self addInput:[[sender titleLabel] text]];
+    [suggestions removeFromSuperview];
+    suggestions = nil;
+}
+
+-(void)shouldClose:(id)sender{
+    [suggestions removeFromSuperview];
+    suggestions = nil;
 }
 
 -(void)addInput:(NSString *)input{
     UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
-    if([theSender shift]){
+    if([theSender shift] || lastWasShift){
+        lastWasShift = YES;
         [kb handleStringInput:[NSString stringWithFormat:@"%c", [input characterAtIndex:0]-32] fromVariantKey:NO];
         if(input.length>1)
             [kb handleStringInput:[input substringFromIndex:1] fromVariantKey:NO];
-    }else
+    }else{
         [kb handleStringInput:input fromVariantKey:NO];
+        lastWasShift = NO;
+    }
 }
 
 -(void)cleanUp{
@@ -117,6 +147,8 @@ static SwypeController *sharedInstance;
     [scribbles removeFromSuperview];
     [scribbles release];
     scribbles = nil;
+    [suggestions removeFromSuperview];
+    suggestions = nil;
 }
 -(void)dealloc{
     [self cleanUp];
