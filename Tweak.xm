@@ -1,25 +1,21 @@
 #import <UIKit/UIKeyboardLayoutStar.h>
 #import <UIKit/UIKBKey.h>
 #import <SpringBoard/SpringBoard.h>
-#import <Foundation/NSTask.h>
 #import "SwypeController.h"
 
 %hook UIKeyboardLayoutStar
-
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     %orig;
     UITouch *touch = [touches anyObject];
     NSString *key = [[self keyHitTest:[touch locationInView:touch.view]] displayString];
     [[SwypeController sharedInstance] addKey:key state:@"DidStart" sender:self touches:touches];
 }
-
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
     %orig;
     UITouch *touch = [touches anyObject];
     NSString *key = [[self keyHitTest:[touch locationInView:touch.view]] displayString];
     [[SwypeController sharedInstance] addKey:key state:@"DidMove" sender:self touches:touches];
 }
-
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
     %orig;
     UITouch *touch = [touches anyObject];
@@ -29,16 +25,21 @@
 %end
 
 %hook UIKBKey
-
 -(NSArray*) variantKeys{
     if([SwypeController sharedInstance].isSwyping) return nil;
     return %orig;
 }
+%end
 
+
+%hook UIKeyboard
+-(void)removeFromSuperview{
+    [[SwypeController sharedInstance] shouldClose:nil];
+    %orig;
+}
 %end
 
 %hook UIKBKeyView
-
 -(id)initWithFrame:(CGRect)frame keyboard:(UIKBKeyboard*)keyboard key:(UIKBKey*)key state:(int)state{
     self = %orig;
     [[SwypeController sharedInstance].kbkeys addObject:self];
@@ -46,17 +47,15 @@
 }
 %end
 
-%hook SBUserInstalledApplicationIcon
+%hook SBApplicationIcon
 -(void)launch{
-    if(![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/.swype/enabled", [[self application] path]]])
-        [[SwypeController sharedInstance] performSelectorInBackground:@selector(copyDictionary:) withObject:[[self application] path]];
-    %orig;
+    if([[[self application] bundleIdentifier] isEqualToString:@"com.wynd.iswipe.add"]){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Add Word" message:@"Must consist of letters from the English alphabet." delegate:[SwypeController sharedInstance] cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add", nil];
+        [alert addTextFieldWithValue:@"" label:nil];
+        [alert show];
+        [alert release];
+    }else
+        %orig;
 }
-%end
 
-static __attribute__((constructor)) void kbloggerinit() {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	%init;
-	[SwypeController sharedInstance];
-	[pool release];
-}
+%end

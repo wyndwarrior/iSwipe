@@ -4,8 +4,8 @@
     NSString *word;
     double weight;
 }
-@property(assign) NSString *word;
-@property(assign) double weight;
+@property(nonatomic, retain) NSString *word;
+@property(nonatomic, assign) double weight;
 @end
 @implementation SwypeDictionaryObject
 @synthesize word, weight;
@@ -13,6 +13,10 @@
     if(weight>obj.weight) return NSOrderedAscending;
     else if(weight<obj.weight) return NSOrderedDescending;
     return NSOrderedSame;
+}
+-(void)dealloc{
+    [word release];
+    [super dealloc];
 }
 @end
 
@@ -27,18 +31,18 @@ static double wlcs(NSString *input, NSString *word){
         mat[i][0] = 0;
     }
     for(int i = 1; i<=word.length; i++)
-        for(int j = 1; j<=input.length; j++){
+        for(int j = 1; j<=input.length; j++)
             if([input characterAtIndex:j-1]==[word characterAtIndex:i-1])
-                mat[i][j] = MAX(mat[i-1][j-1]+wei[j-1], mat[i-1][j]-10);
+                mat[i][j] = MAX(mat[i-1][j-1]+wei[j-1], mat[i-1][j]-30);
             else
                 mat[i][j] = MAX(mat[i-1][j], mat[i][j-1]);
-        }
+    
     return mat[word.length][input.length];
 }
 
 static bool matches(NSString *input, NSString *word){
-    int j = 0;
-    for(int i = 0; i<input.length && j<word.length; i++)
+    int j = 0, i = 0;
+    for(; i<input.length && j<word.length; i++)
         if([input characterAtIndex:i] == [word characterAtIndex:j])
             while(j<word.length && [input characterAtIndex:i] == [word characterAtIndex:j])
                 j++;
@@ -46,34 +50,29 @@ static bool matches(NSString *input, NSString *word){
 }
 
 static double angleFromPoints(CGPoint start, CGPoint end);
+static NSArray* findAnglesForPoints(NSArray* entrancePoints);
+static NSArray* findAngleDifferences(NSArray * angles);
 static inline double toDeg(double rad);
 static inline double minAngle(double a1, double a2);
 
 +(NSArray *)findBestMatches:(NSString *)input forPoints:(NSArray *)entrancePoints{
     int begin = [input characterAtIndex:0]-97, end = [input characterAtIndex:input.length-1]-97;
-    NSString *path = [NSString stringWithFormat:@"/var/mobile/Library/Wynd/Swype/dictionary-%d-%d.txt", begin, end];
-    NSString *dictionary = [[NSString alloc] initWithContentsOfFile:path encoding:NSASCIIStringEncoding error:nil];
-    NSString *path2 = [NSString stringWithFormat:@"%@/.swype/dictionary-%d-%d.txt", [[NSBundle mainBundle] resourcePath], begin, end];
-    if(!dictionary)
-        dictionary = [[NSString alloc] initWithContentsOfFile:path2 encoding:NSASCIIStringEncoding error:nil];
+    NSString *path = [NSString stringWithFormat:@"/var/swype/English/%d-%d.plist", begin, end];
+    NSArray *words = [[NSArray alloc] initWithContentsOfFile:path ];
     
-    NSArray *weights = [self findAnglesForPoints:entrancePoints];
-    weights = [self findAngleDifferences:weights];
+    NSArray *weights = findAngleDifferences(findAnglesForPoints(entrancePoints));
     
-    for(int i = 1; i<weights.count; i++)
+    for(int i = 0; i<weights.count; i++)
         wei[i+1] = [[weights objectAtIndex:i] doubleValue];
     
-    wei[1] = 0;wei[weights.count+2] = 0;
-    
-    NSArray *words = [[dictionary componentsSeparatedByString:@"\n"] retain];
-    [dictionary release];
+    wei[0] = 180;wei[weights.count+1] = 180;
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     
     for(int i = 0; i<words.count; i++){
-        NSString *word = [[words objectAtIndex:i] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if(word.length>0 && matches(input, word)){
+        NSString *word = [words objectAtIndex:i];
+        if(matches(input, word)){
             SwypeDictionaryObject *tmp = [[SwypeDictionaryObject alloc] init];
-            tmp.weight = (words.count-i)/(double)words.count*70+wlcs(input,word);
+            tmp.weight = (words.count-i)/words.count*180+wlcs(input,word);
             tmp.word = word;
             [arr addObject:tmp];
             [tmp release];
@@ -91,7 +90,7 @@ static inline double minAngle(double a1, double a2);
     return [ret autorelease];
 }
 
-+(NSArray *)findAnglesForPoints:(NSArray *)entrancePoints{
+static NSArray* findAnglesForPoints(NSArray* entrancePoints){
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     
     for(int i = 1; i<entrancePoints.count; i++){
@@ -103,7 +102,7 @@ static inline double minAngle(double a1, double a2);
     return [arr autorelease];
 }
 
-+(NSArray *)findAngleDifferences:(NSArray *)angles{
+static NSArray* findAngleDifferences(NSArray * angles){
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     
     for(int i = 1;i<angles.count; i++)
@@ -178,6 +177,19 @@ static inline double minAngle(double a1, double a2){
 
 static inline double toDeg(double rad){
     return rad/M_PI*180;
+}
+
+
++(void)updatePreference:(NSString *)str{
+    int begin = [str characterAtIndex:0]-97, end = [str characterAtIndex:str.length-1]-97;
+    NSString *path = [NSString stringWithFormat:@"/var/swype/English/%d-%d.plist", begin, end];
+    NSMutableArray *words = [[NSMutableArray alloc] initWithContentsOfFile:path];
+    
+    //TODO: optimize this
+    [words removeObject:str];
+    [words insertObject:str atIndex:0];
+    
+    [[NSPropertyListSerialization dataFromPropertyList:words format:NSPropertyListBinaryFormat_v1_0 errorDescription:nil] writeToFile:path atomically:true];
 }
 
 @end

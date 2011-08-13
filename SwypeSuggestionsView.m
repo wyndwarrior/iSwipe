@@ -11,13 +11,14 @@
         self.suggestions = arr;
         suggestionsView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width-frame.size.height, frame.size.height)];
         int curX = 10;
-        for(NSString *suggestion in suggestions){
+        for(int i = 0; i<suggestions.count; i++){
+            NSString *suggestion = [suggestions objectAtIndex:i];
             CGSize size = [suggestion sizeWithFont:[UIFont systemFontOfSize:17]];
             UIButton *btn = [[UIButton alloc] initWithFrame:
                              CGRectMake(curX, (frame.size.height-size.height-2)/2, size.width+10, size.height+2)];
             [btn setTitle:suggestion forState:UIControlStateNormal];
             [btn addTarget:delegate action:@selector(didSelect:) forControlEvents:UIControlEventTouchUpInside];
-            btn.titleLabel.font = [UIFont systemFontOfSize:17];
+            btn.titleLabel.font = i==0?[UIFont boldSystemFontOfSize:17]:[UIFont systemFontOfSize:17];
             [suggestionsView addSubview:btn];
             [btn release];
             curX+=size.width+20;
@@ -33,6 +34,14 @@
         close.titleLabel.font = [UIFont systemFontOfSize:17];
         [self addSubview:close];
         [close release];
+        
+        
+        self.alpha = 0;
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.25];
+        [UIView setAnimationDelay:0.5];
+        self.alpha = 1;
+        [UIView commitAnimations];
     }
     return self;
 }

@@ -1,6 +1,10 @@
 #import "SwypeController.h"
 #import "SwypeModel.h"
 
+@interface UIAlertView (Private)
+-(id)textFieldAtIndex:(int)index;
+@end
+
 @implementation SwypeController
 @synthesize matches, kbkeys, isSwyping;
 
@@ -74,17 +78,6 @@ static SwypeController *sharedInstance;
                 [key setHidden:NO];
 }
 
--(void)copyDictionary:(NSString *)path{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *dir = [NSString stringWithFormat:@"%@/.swype", path];
-    if(![man fileExistsAtPath:dir])
-        [man createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
-    NSArray *cont = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/var/mobile/Library/Wynd/Swype" error:nil];
-    for (NSString* file in cont)
-        [[NSFileManager defaultManager] copyItemAtPath:[@"/var/mobile/Library/Wynd/Swype" stringByAppendingPathComponent:file] toPath:[dir stringByAppendingPathComponent:file] error:nil];
-    [pool drain];
-}
 
 -(void)findMatch:(NSArray *)input{
     NSMutableString *str = [[NSMutableString alloc] init];
@@ -103,14 +96,10 @@ static SwypeController *sharedInstance;
     }
     [self cleanUp];
     if(matches.count>1){
-        NSMutableArray *sugg = [[NSMutableArray alloc] init];
-        for(int i= 1; i<matches.count; i++)
-            [sugg addObject:[matches objectAtIndex:i]];
         UIKeyboard *kb = [UIKeyboard activeKeyboard];
-        suggestions = [[SwypeSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:sugg delegate:self];
+        suggestions = [[SwypeSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:matches delegate:self];
         [kb.superview addSubview:suggestions];
         [suggestions release];
-        [sugg release];
     }
 }
 
@@ -121,6 +110,7 @@ static SwypeController *sharedInstance;
     [self addInput:[[sender titleLabel] text]];
     [suggestions removeFromSuperview];
     suggestions = nil;
+    [SwypeModel updatePreference:[[sender titleLabel] text]];
 }
 
 -(void)shouldClose:(id)sender{
@@ -138,6 +128,37 @@ static SwypeController *sharedInstance;
     }else{
         [kb handleStringInput:input fromVariantKey:NO];
         lastWasShift = NO;
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	if (buttonIndex != [alertView cancelButtonIndex]){
+        NSString * word = [[[alertView textFieldAtIndex:0] text] lowercaseString];
+        
+        bool good = true;
+        for(int i = 0; i<word.length; i++)
+            if([word characterAtIndex:i]<97 || [word characterAtIndex:i]>122)
+                good = false;
+        
+        if(word.length<2 || !good){
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Inavlid Word"
+                                                            message:@"The word you are trying to add is too short or does not consist of letters from the English alphabet."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Dismiss"
+                                                  otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+        }else{
+            [SwypeModel updatePreference:word];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Word Added"
+                                                            message:[NSString stringWithFormat:@"\"%@\" has been added to the dictionary", word]
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Dismiss"
+                                                  otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+        }
     }
 }
 
