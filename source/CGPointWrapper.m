@@ -5,6 +5,6 @@
 +(id)wrapperWithPoint:(CGPoint)p{
     CGPointWrapper *wrap = [[CGPointWrapper alloc] init];
     wrap.point = p;
-    return [wrap autorelease];
+    return wrap;
 }
 @end

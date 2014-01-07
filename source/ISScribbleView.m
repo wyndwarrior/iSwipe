@@ -18,9 +18,9 @@
 
 - (double)length{
     double tot = 0;
-    CGPoint p = [[points objectAtIndex:0] point];
+    CGPoint p = [points[0] point];
     for(int i = 1; i<points.count; i+=2){
-        CGPoint p2 = [[points objectAtIndex:i] point];
+        CGPoint p2 = [points[i] point];
         tot += dist(p2.x-p.x, p2.y-p.y);
         p = p2;
     }
@@ -39,10 +39,10 @@
     CGContextSetLineWidth(UIGraphicsGetCurrentContext(), 7.5);
     CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 0, .58, .9, 1);
     
-    point = [[points objectAtIndex:0] point];
+    point = [points[0] point];
     CGContextMoveToPoint(UIGraphicsGetCurrentContext(), point.x, point.y);
     for(int i = 1; i<points.count; i++){
-        point = [[points objectAtIndex:i] point];
+        point = [points[i] point];
         CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 0, .58, .9, pow((double)i/points.count, .7));
         CGContextSetLineWidth(UIGraphicsGetCurrentContext(), pow((double)i/points.count, .55)*9);
         CGContextAddLineToPoint(UIGraphicsGetCurrentContext(), point.x, point.y);
@@ -59,11 +59,5 @@
     [self removeFromSuperview];
 }
 
-- (void)dealloc
-{
-    [points release];
-    [scribbles release];
-    [super dealloc];
-}
 
 @end

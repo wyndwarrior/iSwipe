@@ -17,9 +17,9 @@ static double getValue(ISData *data, ISWord* iword){
     NSString* word = iword.match;
     
     for( ; i<word.length && j < keys.count; j++)
-        if( [word characterAtIndex:i] == [[keys objectAtIndex:j] letter] ){
-            while(++i < word.length && [word characterAtIndex:i] == [[keys objectAtIndex:j] letter]) val += BONUS;
-            val += [(ISKey*)[keys objectAtIndex:j] angle];
+        if( [word characterAtIndex:i] == [keys[j] letter] ){
+            while(++i < word.length && [word characterAtIndex:i] == [keys[j] letter]) val += BONUS;
+            val += [(ISKey*)keys[j] angle];
         }
     
     if( i != word.length ) val = BAD; //not possible

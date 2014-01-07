@@ -1,6 +1,8 @@
 export TARGET=iphone:7.0
-export ARCHS=armv7
+export ARCHS=armv7 arm64 armv7s
 export SOURCE=source
+
+ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = iSwipe

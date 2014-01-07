@@ -1,3 +1,4 @@
+#import <UIKit/UIKit.h>
 @interface CGPointWrapper : NSObject {
     CGPoint point;
 }

@@ -24,8 +24,10 @@ static double getValue(ISData *data, ISWord* iword, double** mat){
     for(int i = 1; i<=word.length; i++)
         for(int j = 1; j<=keys.count; j++){
             mat[i][j] = BAD;
-            if( [word characterAtIndex:i-1] == [[keys objectAtIndex:j-1] letter] && (mat[i-1][j-1] != -1 || mat[i-1][j] != BAD) ) //matches
-                mat[i][j] = MAX(mat[i-1][j-1] + [[keys objectAtIndex:j-1] angle] , mat[i-1][j] + BONUS);
+            if( [word characterAtIndex:i-1] == [keys[j-1] letter] && (mat[i-1][j-1] != -1 || mat[i-1][j] != BAD) ){ //matches
+                    ISKey *kk = keys[j-1];
+                    mat[i][j] = MAX(mat[i-1][j-1] + kk.angle , mat[i-1][j] + BONUS);
+                }
             if( mat[i][j-1] != BAD )
                 mat[i][j] = MAX(mat[i][j], mat[i][j-1]);
         }

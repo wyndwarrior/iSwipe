@@ -7,6 +7,6 @@
     NSArray *suggestions;
     UIButton *close;
 }
-@property (nonatomic, retain) NSArray *suggestions;
+@property (nonatomic, strong) NSArray *suggestions;
 -(id)initWithFrame:(CGRect)frame suggestions:(NSArray *)arr delegate:(id)delegate;
 @end

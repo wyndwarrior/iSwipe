@@ -27,13 +27,16 @@ static inline bool fileExists(NSString * path){
 #define timeStamp(path) [[FMAN attributesOfItemAtPath:path error:nil] fileModificationDate]
 #define getDir(path) [FMAN contentsOfDirectoryAtPath:path error:nil]
 #define deleteFile(path) [FMAN removeItemAtPath:path error:nil]
+#define _alert(x) [[[UIAlertView alloc] initWithTitle:@"Alert" message:x delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles: nil] show]
 
 #define TESTING 0
 
 #if TESTING
+#define DPATH ([documents() stringByAppendingPathComponent:@"Dictionary"])
 #define PATH [[NSBundle mainBundle] bundlePath]
 #else
-#define PATH @"/var/mobile/Library/Keyboard/iSwipe/Dictionaries/EN"
+#define PATH @"/usr/share/iSwipe"
+#define DPATH [PATH stringByAppendingPathComponent:@"Dictionaries/EN"]
 #endif
 
 static inline NSString* documents(){

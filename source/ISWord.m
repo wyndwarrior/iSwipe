@@ -18,7 +18,7 @@
     w.weight = wei;
     w.count = c;
     w.match = m;
-    return [w autorelease];
+    return w;
 }
 
 -(NSComparisonResult)compare:(ISWord *)obj{
@@ -29,11 +29,6 @@
     return NSOrderedSame;
 }
 
--(void)dealloc{
-    self.word = nil;
-    self.match = nil;
-    [super dealloc];
-}
 
 -(NSString*) description{
     return [NSString stringWithFormat:@"%@(%@) - %.2f", word, match, weight];

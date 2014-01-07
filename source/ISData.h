@@ -11,8 +11,8 @@
     ISKey *cur;
 }
 
-@property (nonatomic, retain) ISKey *cur;
-@property (nonatomic, retain) NSMutableArray *keys;
+@property (nonatomic, strong) ISKey *cur;
+@property (nonatomic, strong) NSMutableArray *keys;
 
 -(bool)addData:(CGPoint)p forKey:(NSString*)k;
 -(void)end;

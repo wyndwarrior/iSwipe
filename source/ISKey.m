@@ -17,7 +17,7 @@
     k.angle = 0;
     k.letter = c;
     k.pts = [NSMutableArray array];
-    return [k autorelease];
+    return k;
 }
 
 -(void)add:(CGPoint)p{
@@ -30,14 +30,14 @@ static inline double calcAngle(CGPoint p1, CGPoint p2, CGPoint p3){
 
 -(void)compute{
     if( self.pts.count >= 3 ){
-        CGPoint p1 = [[self.pts objectAtIndex:self.pts.count-1] point];
+        CGPoint p1 = [(self.pts)[self.pts.count-1] point];
         CGPoint p2 = CGPointZero;
-        CGPoint p3 = [[self.pts objectAtIndex:0] point];
+        CGPoint p3 = [(self.pts)[0] point];
         
         //find farthest point away
         double max = 0;
         for( int i = 1; i<self.pts.count-1; i++){
-            CGPoint pp = [[self.pts objectAtIndex:i] point];
+            CGPoint pp = [(self.pts)[i] point];
             double dt = dist(pp.x-p1.x, pp.y-p1.y) + dist(pp.x-p3.x,pp.y-p3.y);
             if( dt > max){
                 max = dt;
@@ -61,9 +61,5 @@ static inline double calcAngle(CGPoint p1, CGPoint p2, CGPoint p3){
     
 }
 
--(void)dealloc{
-    self.pts = nil;
-    [super dealloc];
-}
 
 @end

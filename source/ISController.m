@@ -22,7 +22,6 @@
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:touch.view];
     NSString *key = [[[sender keyHitTest:point] displayString] lowercaseString];
-    
     if(cmd == @selector(touchesBegan:withEvent:) )
         [self setupSwipe];
     
@@ -55,19 +54,25 @@
             //NSLog(@"ret:%@", arr);
             
             if( arr.count != 0){
-                [self addInput:[[arr objectAtIndex:0] word]];
-                matchLength = [[[arr objectAtIndex:0] word] length];
+                if( UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad){//self.charAdded ){
+                    [self deleteChar];
+                    //self.charAdded = NO;
+                }
+                [self addInput:[arr[0] word]];
                 if( arr.count > 1){
                     UIKeyboard *kb = [UIKeyboard activeKeyboard];
                     suggestions = [[ISSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:arr delegate:self];
                     [kb.superview addSubview:suggestions];
-                    [suggestions release];
                 }
-#if TESTING
-                [[[[[UIApplication sharedApplication] delegate] viewController] label] setText:[[arr objectAtIndex:0] word]];
-#endif
+            }else{
+                if( [key isEqualToString:@"delete"] && matchLength != -1)
+                    [self deleteLast];
+                matchLength = -1;
             }
-            
+        }else{
+            if( [key isEqualToString:@"delete"] && matchLength != -1)
+                [self deleteLast];
+            matchLength = -1;
         }
         [self cleanSwipe];
     }
@@ -81,7 +86,7 @@
 }
 
 -(void)setupSwipe{
-    self.swipe = [[[ISData alloc] init] autorelease];
+    self.swipe = [[ISData alloc] init];
     
     [self shouldClose:nil];
     
@@ -92,7 +97,7 @@
     CGRect frame = kb.frame;
     if( self.scribbles )
         [self.scribbles removeFromSuperview];
-    self.scribbles = [[[ISScribbleView alloc] initWithFrame:CGRectMake(0,0,frame.size.width, frame.size.height)] autorelease];
+    self.scribbles = [[ISScribbleView alloc] initWithFrame:CGRectMake(0,0,frame.size.width, frame.size.height)];
     self.scribbles.userInteractionEnabled = NO;
     self.scribbles.alpha = 0;
     [kb addSubview:scribbles];
@@ -135,42 +140,46 @@
     [[UIKeyboardImpl activeInstance] handleDelete];
 }
 
+-(void)deleteLast{
+    for(int i = 0; i<matchLength; i++)
+        [self deleteChar];
+}
+
 -(void)didSelect:(id)sender{
-    UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
-    for(int i = 0; i<matchLength+1; i++)
-        [kb handleDelete];
+    [self deleteLast];
+    [self deleteChar];
     [self addInput:[[sender titleLabel] text]];
     [self shouldClose:nil];
 }
 
 -(void)addInput:(NSString *)input{
     UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
-    if( self.charAdded ){
-        [self deleteChar];
-        self.charAdded = NO;
-    }
+    
+    matchLength = [input length];
     if([kb isShifted]){
         lastShift = YES;
         char c = [input characterAtIndex:0];
         if( c <= 'z' && c >= 'a' ){
-            [kb handleStringInput:[NSString stringWithFormat:@"%c", [input characterAtIndex:0]-'a'+'A'] fromVariantKey:NO];
+            [self kbinput:[NSString stringWithFormat:@"%c", [input characterAtIndex:0]-'a'+'A']];
             if(input.length>1)
-                [kb handleStringInput:[input substringFromIndex:1] fromVariantKey:NO];
+                [self kbinput:[input substringFromIndex:1]];
         }else{
-            [kb handleStringInput:input fromVariantKey:NO];
+            [self kbinput:input];
         }
     }else{
-        [kb handleStringInput:input fromVariantKey:NO];
+        [self kbinput:input];
         lastShift = NO;
     }
-    [kb handleStringInput:@" " fromVariantKey:NO];
+    [self kbinput:@" "];
+}
+    
+-(void)kbinput:(NSString *)input{
+    UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
+    if( [kb respondsToSelector:@selector(addInputString:)])
+        [kb addInputString: input];
+    else if( [kb respondsToSelector:@selector(handleStringInput:fromVariantKey:)])
+        [kb handleStringInput:input fromVariantKey:NO];
 }
 
--(void)dealloc{
-    self.kbkeys = nil;
-    self.scribbles = nil;
-    
-    [super dealloc];
-}
 
 @end

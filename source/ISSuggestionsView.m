@@ -12,7 +12,7 @@
         suggestionsView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width-frame.size.height, frame.size.height)];
         int curX = 10;
         for(int i = 0; i<suggestions.count; i++){
-            NSString *suggestion = [[suggestions objectAtIndex:i] word];
+            NSString *suggestion = [suggestions[i] word];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
             CGSize size = [suggestion sizeWithFont:[UIFont systemFontOfSize:17]];
@@ -24,7 +24,6 @@
             [btn addTarget:delegate action:@selector(didSelect:) forControlEvents:UIControlEventTouchUpInside];
             btn.titleLabel.font = i==0?[UIFont boldSystemFontOfSize:17]:[UIFont systemFontOfSize:17];
             [suggestionsView addSubview:btn];
-            [btn release];
             curX+=size.width+20;
         }
         [self addSubview:suggestionsView];
@@ -37,7 +36,6 @@
         [close addTarget:delegate action:@selector(shouldClose:) forControlEvents:UIControlEventTouchUpInside];
         close.titleLabel.font = [UIFont systemFontOfSize:17];
         [self addSubview:close];
-        [close release];
         
         
         self.alpha = 0;
@@ -53,9 +51,6 @@
 - (void)dealloc
 {
     [[ISController sharedInstance] shouldClose:self];
-    [suggestionsView release];
-    self.suggestions = nil;
-    [super dealloc];
 }
 
 @end

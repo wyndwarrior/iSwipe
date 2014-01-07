@@ -19,7 +19,7 @@
 
 @property(nonatomic, assign) char letter;
 @property(nonatomic, assign) double angle;
-@property(nonatomic, retain) NSMutableArray *pts;
+@property(nonatomic, strong) NSMutableArray *pts;
 @property(nonatomic, readonly) CGPoint avg;
 
 +(id)keyWithLetter:(char)c;

@@ -46,10 +46,5 @@
     [self.cur compute];
 }
 
--(void)dealloc{
-    self.keys = nil;
-    self.cur = nil;
-    [super dealloc];
-}
 
 @end

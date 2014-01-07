@@ -1,3 +1,4 @@
+#import <UIKit/UIKit.h>
 #import "headers/UIKeyboardLayoutStar.h"
 #import "headers/UIKeyboardImpl.h"
 #import "headers/UIKBKey.h"
@@ -13,12 +14,12 @@
     [[ISController sharedInstance] forwardMethod:self sel:_cmd touches:touches event:event];
 }
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    id del = [[UIKeyboardImpl activeInstance] delegate];
-    NSString *s1 = [del text];
+    //id del = [[UIKeyboardImpl activeInstance] delegate];
+    //NSString *s1 = [del text];
     %orig;
-    NSString *s2 = [del text];
+    //NSString *s2 = [del text];
     
-    [ISController sharedInstance].charAdded = ![s1 isEqualToString:s2];
+    //[ISController sharedInstance].charAdded = ![s1 isEqualToString:s2];
     
     [[ISController sharedInstance] forwardMethod:self sel:_cmd touches:touches event:event];
 }
@@ -40,7 +41,7 @@
 %end
 
 %hook UIKBKeyView
--(id)initWithFrame:(CGRect)frame keyboard:(UIKBKeyboard*)keyboard key:(UIKBKey*)key state:(int)state{
+-(id)initWithFrame:(CGRect)frame keyboard:(id)keyboard key:(UIKBKey*)key state:(int)state{
     self = %orig;
     [[ISController sharedInstance].kbkeys addObject:self];
     if( [ISController sharedInstance].isSwyping && (state == 16 || state == 1) && [[key displayString] length] == 1)

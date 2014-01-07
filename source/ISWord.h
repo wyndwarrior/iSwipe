@@ -14,8 +14,8 @@
     double weight;
     int count;
 }
-@property(nonatomic, retain) NSString *word;
-@property(nonatomic, retain) NSString *match;
+@property(nonatomic, strong) NSString *word;
+@property(nonatomic, strong) NSString *match;
 @property(nonatomic, assign) double weight;
 @property(nonatomic, assign) int count;
 

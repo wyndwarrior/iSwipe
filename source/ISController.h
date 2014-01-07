@@ -22,9 +22,9 @@
     int matchLength;
 }
 
-@property (nonatomic, retain) ISScribbleView *scribbles;
-@property (nonatomic, retain) ISData *swipe;
-@property (nonatomic, retain) NSMutableArray *kbkeys;
+@property (nonatomic, strong) ISScribbleView *scribbles;
+@property (nonatomic, strong) ISData *swipe;
+@property (nonatomic, strong) NSMutableArray *kbkeys;
 @property (nonatomic, readonly) BOOL isSwyping;
 @property (nonatomic, assign) BOOL charAdded;
 
@@ -40,7 +40,9 @@
 
 -(void)shouldClose:(id)sender;
 -(void)addInput:(NSString *)input;
+-(void)kbinput:(NSString *)input;
 
 -(void)deleteChar;
+-(void)deleteLast;
 
 @end
