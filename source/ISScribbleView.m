@@ -32,8 +32,14 @@
     [points addObject:[CGPointWrapper wrapperWithPoint:point]];
     while([self length] > PTSLIM )
         [points removeObjectAtIndex:0];
-    
-    UIGraphicsBeginImageContext(scribbles.frame.size);
+
+     //this hasn't been tested cause I can't compile ;(
+    if (UIGraphicsBeginImageContextWithOptions != NULL) {
+       UIGraphicsBeginImageContextWithOptions(scribbles.frame.size, NO, 0.0);
+    } else {
+       UIGraphicsBeginImageContext(scribbles.frame.size);
+    }
+    //UIGraphicsBeginImageContext(scribbles.frame.size);
     //[scribbles.image drawInRect:CGRectMake(0, 0, scribbles.frame.size.width, scribbles.frame.size.height)];
     CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapRound);
     CGContextSetLineWidth(UIGraphicsGetCurrentContext(), 7.5);
