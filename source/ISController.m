@@ -1,6 +1,12 @@
 #import "ISController.h"
 #import "ISModel.h"
 
+/*@interface ISController ()
+
+@property (nonatomic, assign) CGPoint scribbleStartPoint;
+
+@end*/
+
 @implementation ISController
 @synthesize kbkeys, scribbles, swipe, charAdded;
 
@@ -58,31 +64,17 @@
                     [self deleteChar];
                     //self.charAdded = NO;
                 }
-                [self addInput:[arr[0] word]];
+				NSString *spacePlusWord = [@" " stringByAppendingString:[arr[0] word]];
+                [self addInput:spacePlusWord];
                 if( arr.count > 1){
                     UIKeyboard *kb = [UIKeyboard activeKeyboard];
                     suggestions = [[ISSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:arr delegate:self];
                     [kb.superview addSubview:suggestions];
                 }
-            }else{
-                if( [key isEqualToString:@"delete"] && matchLength != -1)
-                    [self deleteLast];
-                matchLength = -1;
             }
-        }else{
-            if( [key isEqualToString:@"delete"] && matchLength != -1)
-                [self deleteLast];
-            matchLength = -1;
         }
         [self cleanSwipe];
     }
-    
-    /*if(cmd == @selector(touchesBegan:withEvent:) )
-        [self addKey:key state:@"DidStart" sender:sender touches:touches];
-    else if( cmd == @selector(touchesMoved:withEvent:) )
-        [self addKey:key state:@"DidMove" sender:sender touches:touches];
-    else if( cmd == @selector(touchesEnded:withEvent:) )
-        [self addKey:key state:@"DidEnd" sender:sender touches:touches];*/
 }
 
 -(void)setupSwipe{
