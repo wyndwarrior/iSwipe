@@ -17,39 +17,37 @@
         self.suggestions = arr;
         self.suggestionsView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width-frame.size.height, frame.size.height)];
         int curX = 10;
-        for(int i = 0; i<suggestions.count; i++){
-            NSString *suggestion = [suggestions[i] word];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            CGSize size = [suggestion sizeWithFont:[UIFont systemFontOfSize:17]];
-#pragma clang diagnostic pop
-            //CGSize size = [suggestion sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17]}];
-            UIButton *btn = [[UIButton alloc] initWithFrame:
-                             CGRectMake(curX, (frame.size.height-size.height-2)/2, size.width+10, size.height+2)];
+		
+		int i = 0;
+		
+		for (ISWord *word in suggestions) {
+            NSString *suggestion = [word word];
+			CGSize size = [suggestion sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17]}];
+            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(curX, (frame.size.height-size.height-2)/2, size.width+10, size.height+2)];
             [btn setTitle:suggestion forState:UIControlStateNormal];
             [btn addTarget:delegate action:@selector(didSelect:) forControlEvents:UIControlEventTouchUpInside];
             btn.titleLabel.font = i==0?[UIFont boldSystemFontOfSize:17]:[UIFont systemFontOfSize:17];
-            [suggestionsView addSubview:btn];
+            [_suggestionsView addSubview:btn];
             curX+=size.width+20;
-        }
-        [self addSubview:suggestionsView];
-        suggestionsView.contentSize = CGSizeMake(curX, frame.size.height);
-        suggestionsView.showsHorizontalScrollIndicator = NO;
+			i++;
+		}
+
+        [self addSubview:_suggestionsView];
+        _suggestionsView.contentSize = CGSizeMake(curX, frame.size.height);
+        _suggestionsView.showsHorizontalScrollIndicator = NO;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:.7];
         
         self.close = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width-frame.size.height, 0, frame.size.height, frame.size.height)];
-        [close setTitle:@"X" forState:UIControlStateNormal];
-        [close addTarget:delegate action:@selector(shouldClose:) forControlEvents:UIControlEventTouchUpInside];
-        close.titleLabel.font = [UIFont systemFontOfSize:17];
-        [self addSubview:close];
-        
+        [_close setTitle:@"X" forState:UIControlStateNormal];
+        [_close addTarget:delegate action:@selector(shouldClose:) forControlEvents:UIControlEventTouchUpInside];
+        _close.titleLabel.font = [UIFont systemFontOfSize:17];
+        [self addSubview:_close];
         
         self.alpha = 0;
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.25];
-        [UIView setAnimationDelay:0.5];
-        self.alpha = 1;
-        [UIView commitAnimations];
+		
+		[UIView animateWithDuration:0.25f animations:^{
+			self.alpha = 1;
+		}];
     }
     return self;
 }

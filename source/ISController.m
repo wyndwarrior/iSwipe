@@ -177,11 +177,11 @@
     
 -(void)kbinput:(NSString *)input{
     UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
-	[kb addInputString:input];
-    /*if( [kb respondsToSelector:@selector(addInputString:)])
+	//[kb handleStringInput:input fromVariantKey:NO];
+    if( [kb respondsToSelector:@selector(addInputString:)])
         [kb addInputString: input];
     else if( [kb respondsToSelector:@selector(handleStringInput:fromVariantKey:)])
-        [kb handleStringInput:input fromVariantKey:NO];*/
+        [kb handleStringInput:input fromVariantKey:NO];
 }
 
 
