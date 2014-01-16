@@ -120,7 +120,7 @@
 }
 
 -(BOOL)isSwyping{
-    return self.swipe != nil;
+    return self.swipe.keys.count > 0;
 }
 
 -(void)hideKeys{

@@ -4,6 +4,16 @@
 #import "headers/UIKBKey.h"
 #import "ISController.h"
 
+%hook UIKeyboardImpl
+
+- (void)longPressAction {
+	if (![ISController sharedInstance].isSwyping) {
+		%orig;
+	}
+}
+	
+%end
+
 %hook UIKeyboardLayoutStar
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     %orig;
@@ -35,8 +45,10 @@
 
 %hook UIKBKeyView
 -(id)initWithFrame:(CGRect)frame keyboard:(id)keyboard key:(UIKBKey*)key state:(int)state{
+	exit(0);
     self = %orig;
 	if (self) {
+		NSLog(@"UIKBKeyView subviews: %@",self.subviews);
 	    [[ISController sharedInstance].kbkeys addObject:self];
 	    if ([ISController sharedInstance].isSwyping && (state == 16 || state == 1) && [[key displayString] length] == 1) {
 	        [self setHidden:YES];
