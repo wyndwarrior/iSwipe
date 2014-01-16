@@ -1,13 +1,11 @@
 #import "ISController.h"
 #import "ISModel.h"
 
-BOOL isEven(int num) {
-	return fabs((num/2)-floorf(num/2)) > 0;
-}
 
 @interface ISController ()
 
 @property (nonatomic, strong) NSString *initialKey;
+@property (nonatomic, strong) UITouch *startingTouch;
 
 @end
 
@@ -45,6 +43,8 @@ BOOL isEven(int num) {
 	
 	if (cmd == @selector(touchesMoved:withEvent:)) {
 		if (_initialKey && ![_initialKey isEqualToString:key]) {
+			[self.scribbles drawToTouch:_startingTouch];
+			self.startingTouch = nil;
 			[self setupSwipe];
 			self.initialKey = nil;
 		} else {
