@@ -1,11 +1,16 @@
 #import "ISController.h"
 #import "ISModel.h"
 
-/*@interface ISController ()
+#import "logger.h"
 
-@property (nonatomic, assign) CGPoint scribbleStartPoint;
+#define TOUCH_DELAY 0.001
 
-@end*/
+@interface ISController ()
+
+@property (nonatomic, strong) NSString *initialKey;
+@property (nonatomic, assign) double prevTouchTimestamp;
+
+@end
 
 @implementation ISController
 @synthesize kbkeys, scribbles, swipe, charAdded;
@@ -16,56 +21,69 @@
     return sharedInstance;
 }
 
--(id)init{
+- (id)init{
     self = [super init];
     if(self){
         self.kbkeys = [NSMutableArray array];
+		self.prevTouchTimestamp = 0;
     }
     return self;
 }
 
--(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event{
+-(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:touch.view];
     NSString *key = [[[sender keyHitTest:point] displayString] lowercaseString];
-    if(cmd == @selector(touchesBegan:withEvent:) )
-        [self setupSwipe];
-    
-    [self.scribbles drawToTouch:touch];
-    if( key.length == 1 ){
-        bool disp;
-        if( !show & (disp=[self.swipe addData:point forKey:key])){
-            show = true;
-            
-            [UIView beginAnimations:nil context:nil];
-            [UIView setAnimationDuration:0.5];
-            self.scribbles.alpha = 1;
-            [UIView commitAnimations];
-            
-        }
-        if( disp ){
-            [self hideKeys];
-        }
-    }
-    
+	
+    if (cmd == @selector(touchesBegan:withEvent:)) {
+		self.initialKey = key;
+		self.swipe = [[ISData alloc] init];
+	    [self shouldClose:nil];
+	    show = false;
+	}
+	
+	if (cmd == @selector(touchesMoved:withEvent:) && _initialKey && ![_initialKey isEqualToString:key]) {
+		[self setupSwipe];
+		self.initialKey = nil;
+	}
+	
+	double currTime = NSDate.date.timeIntervalSince1970;
+	double timeDiff = currTime-_prevTouchTimestamp;
+	self.prevTouchTimestamp = currTime;
+	
+	[Logger log:[NSString stringWithFormat:@"%f",timeDiff]];
+	
+	if (timeDiff > TOUCH_DELAY) {
+	    [self.scribbles drawToTouch:touch];
+
+	    if (key.length == 1) {
+	        bool disp;
+	        if (!show & (disp=[self.swipe addData:point forKey:key])) {
+	            show = true;
+			
+				[UIView animateWithDuration:0.5f animations:^{
+					self.scribbles.alpha = 1;
+				}];
+	        }
+	        if (disp) {
+	            [self hideKeys];
+	        }
+	    }
+	}
+	
     if( cmd == @selector(touchesEnded:withEvent:) ){
+		self.initialKey = nil;
         [self.swipe end];
         lastShift = NO;
-        /*for(ISKey *k in self.swipe.keys){
-            NSLog(@"%c %.2f %@", k.letter, k.angle, NSStringFromCGPoint(k.avg));
-        }
-        */
+
         if( self.swipe.keys.count >= 2){
             NSArray * arr = [[ISModel sharedInstance] findMatch:self.swipe];
-            //NSLog(@"ret:%@", arr);
             
             if( arr.count != 0){
-                if( UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad){//self.charAdded ){
+                if( UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ){
                     [self deleteChar];
-                    //self.charAdded = NO;
                 }
-				NSString *spacePlusWord = [@" " stringByAppendingString:[arr[0] word]];
-                [self addInput:spacePlusWord];
+                [self addInput:[arr[0] word]];
                 if( arr.count > 1){
                     UIKeyboard *kb = [UIKeyboard activeKeyboard];
                     suggestions = [[ISSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:arr delegate:self];
@@ -78,11 +96,14 @@
 }
 
 -(void)setupSwipe{
-    self.swipe = [[ISData alloc] init];
+	
+	if (!self.swipe) {
+		self.swipe = [[ISData alloc] init];
+		
+	    [self shouldClose:nil];
     
-    [self shouldClose:nil];
-    
-    show = false;
+	    show = false;
+	}
     
     //load scribble view
     UIKeyboard * kb = [UIKeyboard activeKeyboard];
@@ -108,7 +129,7 @@
     [self performSelector:@selector(showKeys) withObject:nil afterDelay:0.1]; //should keys always stay hidden?
 }
 
--(BOOL) isSwyping{
+-(BOOL)isSwyping{
     return self.swipe != nil;
 }
 
@@ -162,7 +183,8 @@
         [self kbinput:input];
         lastShift = NO;
     }
-    [self kbinput:@" "];
+	
+	[self kbinput:@" "];
 }
     
 -(void)kbinput:(NSString *)input{
