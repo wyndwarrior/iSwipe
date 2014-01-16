@@ -12,7 +12,7 @@
 @implementation ISController
 @synthesize kbkeys, scribbles, swipe, charAdded;
 
-+ (ISController *)sharedInstance {
++(ISController *)sharedInstance {
 	static ISController *shared = nil;
 	static dispatch_once_t pred;
     dispatch_once(&pred, ^{
@@ -21,7 +21,7 @@
 	return shared;
 }
 
-- (id)init{
+-(id)init{
     self = [super init];
     if(self){
         self.kbkeys = [NSMutableArray array];
@@ -29,7 +29,7 @@
     return self;
 }
 
--(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event {
+-(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *)event {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:touch.view];
     NSString *key = [[[sender keyHitTest:point] displayString] lowercaseString];
@@ -39,9 +39,7 @@
 		self.swipe = [[ISData alloc] init];
 	    [self shouldClose:nil];
 	    show = false;
-	}
-	
-	if (cmd == @selector(touchesMoved:withEvent:)) {
+	} else if (cmd == @selector(touchesMoved:withEvent:)) {
 		if (_initialKey && ![_initialKey isEqualToString:key]) {
 			[self.scribbles drawToTouch:_startingTouch];
 			self.startingTouch = nil;
@@ -64,22 +62,20 @@
 		        }
 		    }
 		}
-	}
-
-    if( cmd == @selector(touchesEnded:withEvent:) ){
+	} else if( cmd == @selector(touchesEnded:withEvent:) ){
 		self.initialKey = nil;
         [self.swipe end];
         lastShift = NO;
 
-        if( self.swipe.keys.count >= 2){
+        if (self.swipe.keys.count >= 2) {
             NSArray * arr = [[ISModel sharedInstance] findMatch:self.swipe];
             
-            if( arr.count != 0){
-                if( UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad ){
+            if (arr.count != 0) {
+                if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
                     [self deleteChar];
                 }
                 [self addInput:[arr[0] word]];
-                if( arr.count > 1){
+                if (arr.count > 1) {
                     UIKeyboard *kb = [UIKeyboard activeKeyboard];
                     suggestions = [[ISSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:arr delegate:self];
                     [kb.superview addSubview:suggestions];
@@ -91,7 +87,6 @@
 }
 
 -(void)setupSwipe{
-	
 	if (!self.swipe) {
 		self.swipe = [[ISData alloc] init];
 	    [self shouldClose:nil];
@@ -112,12 +107,12 @@
 -(void)cleanSwipe{
     self.swipe = nil;
     
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.5];
-    [UIView setAnimationDelegate:self.scribbles];
-    self.scribbles.alpha = 0;
-    self.scribbles = nil;
-    [UIView commitAnimations];
+	[UIView animateWithDuration:0.5f animations:^{
+		self.scribbles.alpha = 0;
+	} completion:^(BOOL finished){
+		[self.scribbles removeFromSuperview];
+		self.scribbles = nil;
+	}];
     
     [self performSelector:@selector(showKeys) withObject:nil afterDelay:0.1]; //should keys always stay hidden?
 }

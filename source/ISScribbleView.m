@@ -3,6 +3,7 @@
 #define PTSLIM 300
 
 @implementation ISScribbleView
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -59,10 +60,6 @@
     CGContextFlush(UIGraphicsGetCurrentContext());
     scribbles.image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-}
-
-- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
-    [self removeFromSuperview];
 }
 
 
