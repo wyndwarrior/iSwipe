@@ -1,5 +1,11 @@
 #import "ISSuggestionsView.h"
 
+@interface ISSuggestionsView ()
+
+@property (nonatomic, strong) UIScrollView *suggestionsView;
+@property (nonatomic, strong) UIButton *close;
+
+@end
 
 @implementation ISSuggestionsView
 @synthesize suggestions;
@@ -9,7 +15,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.suggestions = arr;
-        suggestionsView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width-frame.size.height, frame.size.height)];
+        self.suggestionsView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width-frame.size.height, frame.size.height)];
         int curX = 10;
         for(int i = 0; i<suggestions.count; i++){
             NSString *suggestion = [suggestions[i] word];
@@ -31,7 +37,7 @@
         suggestionsView.showsHorizontalScrollIndicator = NO;
         self.backgroundColor = [UIColor colorWithWhite:0 alpha:.7];
         
-        close = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width-frame.size.height, 0, frame.size.height, frame.size.height)];
+        self.close = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width-frame.size.height, 0, frame.size.height, frame.size.height)];
         [close setTitle:@"X" forState:UIControlStateNormal];
         [close addTarget:delegate action:@selector(shouldClose:) forControlEvents:UIControlEventTouchUpInside];
         close.titleLabel.font = [UIFont systemFontOfSize:17];
@@ -46,6 +52,12 @@
         [UIView commitAnimations];
     }
     return self;
+}
+
+- (void)setFrame:(CGRect)frame {
+	[super setFrame:frame];
+	_suggestionsView.frame = CGRectMake(0, 0, frame.size.width-frame.size.height, frame.size.height);
+	_close.frame = CGRectMake(frame.size.width-frame.size.height, 0, frame.size.height, frame.size.height);
 }
 
 - (void)dealloc
