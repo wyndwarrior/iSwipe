@@ -15,13 +15,13 @@
     
     ISScribbleView *scribbles;
     ISData *swipe;
-    ISSuggestionsView* suggestions;
     
     bool show;
     bool lastShift;
     int matchLength;
 }
 
+@property (nonatomic, strong) ISSuggestionsView *suggestions;
 @property (nonatomic, strong) ISScribbleView *scribbles;
 @property (nonatomic, strong) ISData *swipe;
 @property (nonatomic, strong) NSMutableArray *kbkeys;

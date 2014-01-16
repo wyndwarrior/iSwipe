@@ -24,6 +24,12 @@
     [[ISController sharedInstance] shouldClose:nil];
     %orig;
 }
+
+- (void)setFrame:(CGRect)frame {
+	%orig;
+	// Fix the size and position of the suggestionview
+	[ISController sharedInstance].suggestions.frame = CGRectMake(0, frame.origin.y-30, frame.size.width, 30);
+}
 %end
 
 %hook UIKBKeyView

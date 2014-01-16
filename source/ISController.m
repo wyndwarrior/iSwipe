@@ -77,8 +77,8 @@
                 [self addInput:[arr[0] word]];
                 if (arr.count > 1) {
                     UIKeyboard *kb = [UIKeyboard activeKeyboard];
-                    suggestions = [[ISSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:arr delegate:self];
-                    [kb.superview addSubview:suggestions];
+                    self.suggestions = [[ISSuggestionsView alloc] initWithFrame:CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30) suggestions:arr delegate:self];
+                    [kb.superview addSubview:_suggestions];
                 }
             }
         }
@@ -133,8 +133,8 @@
 }
 
 -(void)shouldClose:(id)sender{
-    [suggestions removeFromSuperview];
-    suggestions = nil;
+    [_suggestions removeFromSuperview];
+    self.suggestions = nil;
 }
 
 -(void)deleteChar{
@@ -177,10 +177,11 @@
     
 -(void)kbinput:(NSString *)input{
     UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
-    if( [kb respondsToSelector:@selector(addInputString:)])
+	[kb addInputString:input];
+    /*if( [kb respondsToSelector:@selector(addInputString:)])
         [kb addInputString: input];
     else if( [kb respondsToSelector:@selector(handleStringInput:fromVariantKey:)])
-        [kb handleStringInput:input fromVariantKey:NO];
+        [kb handleStringInput:input fromVariantKey:NO];*/
 }
 
 
