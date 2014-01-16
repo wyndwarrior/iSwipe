@@ -17,6 +17,7 @@
     %orig;
     [[ISController sharedInstance] forwardMethod:self sel:_cmd touches:touches event:event];
 }
+
 %end
 
 %hook UIKeyboard

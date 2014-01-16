@@ -25,6 +25,7 @@
 @property (nonatomic, strong) ISScribbleView *scribbles;
 @property (nonatomic, strong) ISData *swipe;
 @property (nonatomic, strong) NSMutableArray *kbkeys;
+@property (nonatomic, strong) NSMutableArray *kbmenuviews;
 @property (nonatomic, readonly) BOOL isSwyping;
 @property (nonatomic, assign) BOOL charAdded;
 

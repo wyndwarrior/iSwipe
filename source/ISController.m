@@ -25,6 +25,7 @@
     self = [super init];
     if(self){
         self.kbkeys = [NSMutableArray array];
+		self.kbmenuviews = [NSMutableArray array];
     }
     return self;
 }
@@ -43,6 +44,7 @@
 		if (_initialKey && ![_initialKey isEqualToString:key]) {
 			[self.scribbles drawToTouch:_startingTouch];
 			self.startingTouch = nil;
+			
 			[self setupSwipe];
 			self.initialKey = nil;
 		} else {
@@ -90,7 +92,7 @@
 	if (!self.swipe) {
 		self.swipe = [[ISData alloc] init];
 	    [self shouldClose:nil];
-	    show = false;
+	    show = false;	
 	}
     
     //load scribble view
@@ -122,14 +124,18 @@
 }
 
 -(void)hideKeys{
-    for(UIKBKeyView *k in self.kbkeys)
-        if( (k.state & 0x11) != 0 && [[[k key] displayString] length] == 1)
-            k.hidden = YES;
+    for(UIKBKeyView *k in self.kbkeys) {
+		if( (k.state & 0x11) != 0 && [[[k key] displayString] length] == 1) {
+			k.hidden = YES;
+		}
+	}
 }
 -(void)showKeys{
-    for(UIKBKeyView *k in self.kbkeys)
-        if( (k.state & 0x11) != 0 && [[[k key] displayString] length] == 1)
-            k.hidden = NO;
+    for(UIKBKeyView *k in self.kbkeys) {
+		if( (k.state & 0x11) != 0 && [[[k key] displayString] length] == 1) {
+			k.hidden = NO;
+		}
+	}    
 }
 
 -(void)shouldClose:(id)sender{
@@ -177,7 +183,6 @@
     
 -(void)kbinput:(NSString *)input{
     UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
-	//[kb handleStringInput:input fromVariantKey:NO];
     if( [kb respondsToSelector:@selector(addInputString:)])
         [kb addInputString: input];
     else if( [kb respondsToSelector:@selector(handleStringInput:fromVariantKey:)])
