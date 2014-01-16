@@ -3,12 +3,9 @@
 
 #import "logger.h"
 
-#define TOUCH_DELAY 0.001
-
 @interface ISController ()
 
 @property (nonatomic, strong) NSString *initialKey;
-@property (nonatomic, assign) double prevTouchTimestamp;
 
 @end
 
@@ -47,29 +44,21 @@
 		self.initialKey = nil;
 	}
 	
-	double currTime = NSDate.date.timeIntervalSince1970;
-	double timeDiff = currTime-_prevTouchTimestamp;
-	self.prevTouchTimestamp = currTime;
-	
-	[Logger log:[NSString stringWithFormat:@"%f",timeDiff]];
-	
-	if (timeDiff > TOUCH_DELAY) {
-	    [self.scribbles drawToTouch:touch];
+    [self.scribbles drawToTouch:touch];
 
-	    if (key.length == 1) {
-	        bool disp;
-	        if (!show & (disp=[self.swipe addData:point forKey:key])) {
-	            show = true;
-			
-				[UIView animateWithDuration:0.5f animations:^{
-					self.scribbles.alpha = 1;
-				}];
-	        }
-	        if (disp) {
-	            [self hideKeys];
-	        }
-	    }
-	}
+    if (key.length == 1) {
+        bool disp;
+        if (!show & (disp=[self.swipe addData:point forKey:key])) {
+            show = true;
+		
+			[UIView animateWithDuration:0.5f animations:^{
+				self.scribbles.alpha = 1;
+			}];
+        }
+        if (disp) {
+            [self hideKeys];
+        }
+    }
 	
     if( cmd == @selector(touchesEnded:withEvent:) ){
 		self.initialKey = nil;
