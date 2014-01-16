@@ -1,7 +1,9 @@
 #import "ISController.h"
 #import "ISModel.h"
 
-#import "logger.h"
+BOOL isEven(int num) {
+	return fabs((num/2)-floorf(num/2)) > 0;
+}
 
 @interface ISController ()
 
@@ -12,17 +14,19 @@
 @implementation ISController
 @synthesize kbkeys, scribbles, swipe, charAdded;
 
-+(ISController*)sharedInstance{
-    static ISController *sharedInstance = nil;
-    if(!sharedInstance)sharedInstance = [[ISController alloc] init];
-    return sharedInstance;
++ (ISController *)sharedInstance {
+	static ISController *shared = nil;
+	static dispatch_once_t pred;
+    dispatch_once(&pred, ^{
+        shared = [[ISController alloc]init];
+    });
+	return shared;
 }
 
 - (id)init{
     self = [super init];
     if(self){
         self.kbkeys = [NSMutableArray array];
-		self.prevTouchTimestamp = 0;
     }
     return self;
 }
@@ -31,7 +35,7 @@
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:touch.view];
     NSString *key = [[[sender keyHitTest:point] displayString] lowercaseString];
-	
+
     if (cmd == @selector(touchesBegan:withEvent:)) {
 		self.initialKey = key;
 		self.swipe = [[ISData alloc] init];
@@ -39,27 +43,29 @@
 	    show = false;
 	}
 	
-	if (cmd == @selector(touchesMoved:withEvent:) && _initialKey && ![_initialKey isEqualToString:key]) {
-		[self setupSwipe];
-		self.initialKey = nil;
-	}
-	
-    [self.scribbles drawToTouch:touch];
+	if (cmd == @selector(touchesMoved:withEvent:)) {
+		if (_initialKey && ![_initialKey isEqualToString:key]) {
+			[self setupSwipe];
+			self.initialKey = nil;
+		} else {
+		    [self.scribbles drawToTouch:touch];
 
-    if (key.length == 1) {
-        bool disp;
-        if (!show & (disp=[self.swipe addData:point forKey:key])) {
-            show = true;
+		    if (key.length == 1) {
+		        bool disp;
+		        if (!show & (disp=[self.swipe addData:point forKey:key])) {
+		            show = true;
 		
-			[UIView animateWithDuration:0.5f animations:^{
-				self.scribbles.alpha = 1;
-			}];
-        }
-        if (disp) {
-            [self hideKeys];
-        }
-    }
-	
+					[UIView animateWithDuration:0.5f animations:^{
+						self.scribbles.alpha = 1;
+					}];
+		        }
+		        if (disp) {
+		            [self hideKeys];
+		        }
+		    }
+		}
+	}
+
     if( cmd == @selector(touchesEnded:withEvent:) ){
 		self.initialKey = nil;
         [self.swipe end];
@@ -88,9 +94,7 @@
 	
 	if (!self.swipe) {
 		self.swipe = [[ISData alloc] init];
-		
 	    [self shouldClose:nil];
-    
 	    show = false;
 	}
     
