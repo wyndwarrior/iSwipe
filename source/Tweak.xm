@@ -2,7 +2,33 @@
 #import "headers/UIKeyboardLayoutStar.h"
 #import "headers/UIKeyboardImpl.h"
 #import "headers/UIKBKey.h"
+#import "headers/UIKBKeyplaneView.h"
 #import "ISController.h"
+
+%hook UIKBKeyplaneView
+	
+// state == 2 => normal
+// state == 4 => pressed
+- (void)setState:(int)arg1 forKey:(id)arg2 {
+	if (![ISController sharedInstance].isSwyping) {
+		%orig;
+	} else {
+		%orig(2,arg2);
+	}
+}
+	
+/*- (int)stateForKey:(id)arg1 {
+	// state == 2 => normal
+	// state == 4 => pressed
+	
+	if (![ISController sharedInstance].isSwyping) {
+		return %orig;
+	}
+	
+	return 2;
+}*/
+	
+%end
 
 %hook UIKeyboardImpl
 
