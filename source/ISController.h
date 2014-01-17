@@ -10,12 +10,7 @@
 #import "ISData.h"
 
 @class ISSuggestionsView;
-@interface ISController : NSObject {
-    NSMutableArray *kbkeys; //list of kbkeyviews to hide when swiping
-    
-    ISScribbleView *scribbles;
-    ISData *swipe;
-    
+@interface ISController : NSObject {     
     bool show;
     bool lastShift;
     int matchLength;
@@ -23,8 +18,6 @@
 @property (nonatomic, strong) ISSuggestionsView *suggestionsView;
 @property (nonatomic, strong) ISScribbleView *scribbles;
 @property (nonatomic, strong) ISData *swipe;
-@property (nonatomic, strong) NSMutableArray *kbkeys;
-@property (nonatomic, strong) NSMutableArray *kbmenuviews;
 @property (nonatomic, readonly) BOOL isSwyping;
 @property (nonatomic, assign) BOOL charAdded;
 
@@ -33,10 +26,6 @@
 -(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event;
 -(void)setupSwipe;
 -(void)cleanSwipe;
-
-//hide/show key conformation views
--(void)hideKeys;
--(void)showKeys;
 
 -(void)addInput:(NSString *)input;
 -(void)kbinput:(NSString *)input;

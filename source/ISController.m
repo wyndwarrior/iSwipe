@@ -1,7 +1,6 @@
 #import "ISController.h"
 #import "ISModel.h"
 
-
 @interface ISController () <ISSuggestionsViewDelegate>
 
 @property (nonatomic, strong) NSString *initialKey;
@@ -10,7 +9,6 @@
 @end
 
 @implementation ISController
-@synthesize kbkeys, scribbles, swipe, charAdded;
 
 + (ISController *)sharedInstance {
 	static ISController *shared = nil;
@@ -24,7 +22,6 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        self.kbkeys = [NSMutableArray array];
 		self.suggestionsView = [[ISSuggestionsView alloc]init]; // CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30)
 		_suggestionsView.delegate = self;
     }
@@ -59,9 +56,6 @@
 					[UIView animateWithDuration:0.5f animations:^{
 						self.scribbles.alpha = 1;
 					}];
-		        }
-		        if (disp) {
-		            [self hideKeys];
 		        }
 		    }
 		}
@@ -120,27 +114,10 @@
 		[self.scribbles removeFromSuperview];
 		self.scribbles = nil;
 	}];
-    
-    [self performSelector:@selector(showKeys) withObject:nil afterDelay:0.1]; //should keys always stay hidden?
 }
 
 -(BOOL)isSwyping{
     return self.swipe.keys.count > 0;
-}
-
--(void)hideKeys{
-    for(UIKBKeyView *k in self.kbkeys) {
-		if( (k.state & 0x11) != 0 && [[[k key] displayString] length] == 1) {
-			k.hidden = YES;
-		}
-	}
-}
--(void)showKeys{
-    for(UIKBKeyView *k in self.kbkeys) {
-		if( (k.state & 0x11) != 0 && [[[k key] displayString] length] == 1) {
-			k.hidden = NO;
-		}
-	}    
 }
 
 -(void)deleteChar{

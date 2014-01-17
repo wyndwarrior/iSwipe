@@ -56,17 +56,3 @@
 	[ISController sharedInstance].suggestionsView.frame = CGRectMake(0, frame.origin.y-30, frame.size.width, 30);
 }
 %end
-
-/*%hook UIKBKeyView
--(id)initWithFrame:(CGRect)frame keyboard:(id)keyboard key:(UIKBKey*)key state:(int)state{
-    self = %orig;
-	if (self) {
-		NSLog(@"UIKBKeyView subviews: %@",self.subviews);
-	    [[ISController sharedInstance].kbkeys addObject:self];
-	    if ([ISController sharedInstance].isSwyping && (state == 16 || state == 1) && [[key displayString] length] == 1) {
-	        [self setHidden:YES];
-		}
-	}
-    return self;
-}
-%end*/
