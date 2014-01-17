@@ -16,18 +16,7 @@
 		%orig(2,arg2);
 	}
 }
-	
-/*- (int)stateForKey:(id)arg1 {
-	// state == 2 => normal
-	// state == 4 => pressed
-	
-	if (![ISController sharedInstance].isSwyping) {
-		return %orig;
-	}
-	
-	return 2;
-}*/
-	
+
 %end
 
 %hook UIKeyboardImpl
@@ -58,20 +47,18 @@
 
 %hook UIKeyboard
 -(void)removeFromSuperview{
-    [[ISController sharedInstance] shouldClose:nil];
+	[[ISController sharedInstance].suggestionsView hideAnimated:YES];
     %orig;
 }
 
 - (void)setFrame:(CGRect)frame {
 	%orig;
-	// Fix the size and position of the suggestionview
-	[ISController sharedInstance].suggestions.frame = CGRectMake(0, frame.origin.y-30, frame.size.width, 30);
+	[ISController sharedInstance].suggestionsView.frame = CGRectMake(0, frame.origin.y-30, frame.size.width, 30);
 }
 %end
 
-%hook UIKBKeyView
+/*%hook UIKBKeyView
 -(id)initWithFrame:(CGRect)frame keyboard:(id)keyboard key:(UIKBKey*)key state:(int)state{
-	exit(0);
     self = %orig;
 	if (self) {
 		NSLog(@"UIKBKeyView subviews: %@",self.subviews);
@@ -82,4 +69,4 @@
 	}
     return self;
 }
-%end
+%end*/

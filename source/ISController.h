@@ -20,8 +20,7 @@
     bool lastShift;
     int matchLength;
 }
-
-@property (nonatomic, strong) ISSuggestionsView *suggestions;
+@property (nonatomic, strong) ISSuggestionsView *suggestionsView;
 @property (nonatomic, strong) ISScribbleView *scribbles;
 @property (nonatomic, strong) ISData *swipe;
 @property (nonatomic, strong) NSMutableArray *kbkeys;
@@ -39,7 +38,6 @@
 -(void)hideKeys;
 -(void)showKeys;
 
--(void)shouldClose:(id)sender;
 -(void)addInput:(NSString *)input;
 -(void)kbinput:(NSString *)input;
 

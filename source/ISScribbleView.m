@@ -40,14 +40,14 @@
     } else {
        UIGraphicsBeginImageContext(scribbles.frame.size);
     }
-    //UIGraphicsBeginImageContext(scribbles.frame.size);
-    //[scribbles.image drawInRect:CGRectMake(0, 0, scribbles.frame.size.width, scribbles.frame.size.height)];
+
     CGContextSetLineCap(UIGraphicsGetCurrentContext(), kCGLineCapRound);
     CGContextSetLineWidth(UIGraphicsGetCurrentContext(), 7.5);
     CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 0, .58, .9, 1);
     
     point = [points[0] point];
     CGContextMoveToPoint(UIGraphicsGetCurrentContext(), point.x, point.y);
+
     for(int i = 1; i<points.count; i++){
         point = [points[i] point];
         CGContextSetRGBStrokeColor(UIGraphicsGetCurrentContext(), 0, .58, .9, pow((double)i/points.count, .7));
