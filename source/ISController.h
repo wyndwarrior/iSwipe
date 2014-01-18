@@ -10,25 +10,23 @@
 #import "ISData.h"
 
 @class ISSuggestionsView;
-@interface ISController : NSObject {     
-    bool show;
-    bool lastShift;
+@interface ISController : NSObject {
     int matchLength;
 }
 @property (nonatomic, strong) ISSuggestionsView *suggestionsView;
-@property (nonatomic, strong) ISScribbleView *scribbles;
+@property (nonatomic, strong) ISScribbleView *scribbleView;
 @property (nonatomic, strong) ISData *swipe;
 @property (nonatomic, readonly) BOOL isSwyping;
-@property (nonatomic, assign) BOOL charAdded;
+//@property (nonatomic, assign) BOOL charAdded;
 
-+(ISController*)sharedInstance;
++ (ISController *)sharedInstance;
 
--(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event;
+- (void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event;
 
--(void)addInput:(NSString *)input;
--(void)kbinput:(NSString *)input;
+- (void)addInput:(NSString *)input;
+- (void)kbinput:(NSString *)input;
 
--(void)deleteChar;
--(void)deleteLast;
+- (void)deleteChar;
+- (void)deleteLast;
 
 @end
