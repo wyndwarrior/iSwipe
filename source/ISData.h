@@ -5,16 +5,12 @@
 #import "ISUtils.h"
 #import "CGPointWrapper.h"
 
-@interface ISData : NSObject{
-    double len;
-    NSMutableArray *keys;
-    ISKey *cur;
-}
+@interface ISData : NSObject
 
 @property (nonatomic, strong) ISKey *cur;
 @property (nonatomic, strong) NSMutableArray *keys;
 
--(bool)addData:(CGPoint)p forKey:(NSString*)k;
--(void)end;
+- (void)addData:(CGPoint)p forKey:(NSString*)k;
+- (void)end;
 
 @end

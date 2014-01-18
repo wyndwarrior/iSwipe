@@ -23,6 +23,7 @@
     self = [super init];
     if (self) {
 		self.suggestionsView = [[ISSuggestionsView alloc]init]; // CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30)
+		self.scribbles = [[ISScribbleView alloc]init];
 		_suggestionsView.delegate = self;
     }
     return self;
@@ -37,26 +38,23 @@
 		self.initialKey = key;
 		self.swipe = [[ISData alloc]init];
 		[_suggestionsView hideAnimated:YES];
-	    show = false;
+		self.startingTouch = touch;
 	} else if (cmd == @selector(touchesMoved:withEvent:)) {
 		if (_initialKey && ![_initialKey isEqualToString:key]) {
+			self.initialKey = nil;
+			
+			[self.scribbles show];
 			[self.scribbles drawToTouch:_startingTouch];
 			self.startingTouch = nil;
-			
-			[self setupSwipe];
-			self.initialKey = nil;
 		} else {
 		    [self.scribbles drawToTouch:touch];
 
 		    if (key.length == 1) {
-		        bool disp;
-		        if (!show & (disp=[self.swipe addData:point forKey:key])) {
-		            show = true;
-		
-					[UIView animateWithDuration:0.5f animations:^{
-						self.scribbles.alpha = 1;
-					}];
-		        }
+				[self.swipe addData:point forKey:key];
+				
+				if (!self.scribbles.isVisible) {
+					[self.scribbles show];
+				}
 		    }
 		}
 	} else if (cmd == @selector(touchesEnded:withEvent:)) {
@@ -82,45 +80,21 @@
                 }
             }
         }
-        [self cleanSwipe];
+        [self resetSwipe];
     }
 }
 
--(void)setupSwipe{
-	if (!self.swipe) {
-		self.swipe = [[ISData alloc] init];
-		[_suggestionsView hideAnimated:YES];
-	    show = false;
-	}
-    
-    //load scribble view
-    UIKeyboard * kb = [UIKeyboard activeKeyboard];
-    CGRect frame = kb.frame;
-    if (self.scribbles) {
-        [self.scribbles removeFromSuperview];
-	}
-    self.scribbles = [[ISScribbleView alloc] initWithFrame:CGRectMake(0,0,frame.size.width, frame.size.height)];
-    self.scribbles.userInteractionEnabled = NO;
-   // self.scribbles.alpha = 0;
-    [kb addSubview:self.scribbles];
+- (void)resetSwipe {
+	self.swipe = [[ISData alloc]init];
+	[self.scribbles hide];
+	[self.scribbles resetPoints];
 }
 
--(void)cleanSwipe{
-    self.swipe = nil;
-    
-	[UIView animateWithDuration:0.5f animations:^{
-		self.scribbles.alpha = 0;
-	} completion:^(BOOL finished){
-		[self.scribbles removeFromSuperview];
-		self.scribbles = nil;
-	}];
-}
-
--(BOOL)isSwyping{
+- (BOOL)isSwyping {
     return self.swipe.keys.count > 0;
 }
 
--(void)deleteChar{
+- (void)deleteChar {
     [[UIKeyboardImpl activeInstance] handleDelete];
 }
 

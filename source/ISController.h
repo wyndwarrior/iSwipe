@@ -24,8 +24,6 @@
 +(ISController*)sharedInstance;
 
 -(void)forwardMethod:(id)sender sel:(SEL)cmd touches:(NSSet *)touches event:(UIEvent *) event;
--(void)setupSwipe;
--(void)cleanSwipe;
 
 -(void)addInput:(NSString *)input;
 -(void)kbinput:(NSString *)input;
