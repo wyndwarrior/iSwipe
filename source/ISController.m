@@ -37,7 +37,7 @@
     if (cmd == @selector(touchesBegan:withEvent:)) {
 		self.initialKey = key;
 		self.swipe = [[ISData alloc]init];
-		[_suggestionsView hideAnimated:YES];
+		[self.suggestionsView hideAnimated:YES];
 		self.startingTouch = touch;
 	} else if (cmd == @selector(touchesMoved:withEvent:)) {
 		if (_initialKey && ![_initialKey isEqualToString:key]) {
@@ -68,8 +68,6 @@
                 [self addInput:[arr[0] word]];
 				
                 if (arr.count > 1) {
-                    UIKeyboard *kb = [UIKeyboard activeKeyboard];
-					_suggestionsView.frame = CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30);
 					_suggestionsView.suggestions = arr;
 					[_suggestionsView showAnimated:YES];
                 }

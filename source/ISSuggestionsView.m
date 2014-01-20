@@ -12,7 +12,9 @@
 @implementation ISSuggestionsView
 
 - (void)showAnimated:(BOOL)animated {
-	[[UIKeyboard.activeKeyboard superview] addSubview:self];
+	UIKeyboard *kb = [UIKeyboard activeKeyboard];
+	[kb.superview addSubview:self];
+	self.frame = CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30);
 	
 	if (animated) {
 		[UIView animateWithDuration:ANIM_LENGTH animations:^{

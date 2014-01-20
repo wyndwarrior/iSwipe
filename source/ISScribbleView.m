@@ -14,7 +14,7 @@
 - (void)show {
 	self.isVisible = YES;
     UIKeyboard *kb = [UIKeyboard activeKeyboard];
-    self.frame = kb.frame;
+    self.frame = CGRectMake(0,0,kb.frame.size.width, kb.frame.size.height);
     [kb addSubview:self];
 }
 
@@ -64,7 +64,7 @@
 	    CGContextMoveToPoint(context, point.x, point.y);
 
 	    for (int i = 1; i<pointsCount; i++) {
-	        point = [_points[i] point];
+			point = [_points[i] point];
 	        CGContextSetRGBStrokeColor(context, 0, .58, .9, pow((double)i/pointsCount, .7));
 	        CGContextSetLineWidth(context, pow((double)i/pointsCount, .55)*9);
 	        CGContextAddLineToPoint(context, point.x, point.y);
