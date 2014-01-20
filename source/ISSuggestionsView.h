@@ -2,11 +2,20 @@
 #import "ISWord.h"
 #import "ISController.h"
 
-@interface ISSuggestionsView : UIView {
-    UIScrollView *suggestionsView;
-    NSArray *suggestions;
-    UIButton *close;
-}
+@protocol ISSuggestionsViewDelegate;
+
+@interface ISSuggestionsView : UIView
+
 @property (nonatomic, strong) NSArray *suggestions;
--(id)initWithFrame:(CGRect)frame suggestions:(NSArray *)arr delegate:(id)delegate;
+@property (nonatomic, weak) id <ISSuggestionsViewDelegate> delegate;
+
+- (void)showAnimated:(BOOL)animated;
+- (void)hideAnimated:(BOOL)animated;
+
+@end
+
+@protocol ISSuggestionsViewDelegate <NSObject>
+
+- (void)suggestionsView:(ISSuggestionsView *)suggestionsView didSelectSuggestion:(NSString *)suggestion;
+
 @end

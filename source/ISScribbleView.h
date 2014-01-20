@@ -2,10 +2,16 @@
 #import "CGPointWrapper.h"
 #import "ISUtils.h"
 
-@interface ISScribbleView : UIView {
-    UIImageView *scribbles;
-    NSMutableArray *points;
-}
--(void)drawToTouch:(UITouch*)touch;
--(double)length;
+@interface ISScribbleView : UIView
+
+@property (nonatomic, assign) BOOL isVisible;
+
+- (void)show;
+- (void)hide;
+
+- (void)resetPoints;
+
+- (void)drawToTouch:(UITouch *)touch;
+- (double)length;
+
 @end
