@@ -22,8 +22,8 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-		self.suggestionsView = [[ISSuggestionsView alloc]init];
-		self.scribbleView = [[ISScribbleView alloc]init];
+		self.suggestionsView = [[ISSuggestionsView alloc] init];
+		self.scribbleView = [[ISScribbleView alloc] init];
 		_suggestionsView.delegate = self;
     }
     return self;
@@ -36,16 +36,23 @@
 
     if (cmd == @selector(touchesBegan:withEvent:)) {
 		self.initialKey = key;
-		self.swipe = [[ISData alloc]init];
+		self.swipe = [[ISData alloc] init];
 		[self.suggestionsView hideAnimated:YES];
+        [self.scribbleView resetPoints];
 		self.startingTouch = touch;
 	} else if (cmd == @selector(touchesMoved:withEvent:)) {
 		if (_initialKey && ![_initialKey isEqualToString:key]) {
+            if( [self.initialKey isEqualToString:@"delete"] && matchLength != -1){
+                [self deleteLast];
+                [sender touchesEnded:touches withEvent:event];
+                [self deleteChar];
+                [self resetSwipe];
+            }else{
+                [self.scribbleView show];
+                [self.scribbleView drawToTouch:_startingTouch];
+                self.startingTouch = nil;
+            }
 			self.initialKey = nil;
-			
-			[self.scribbleView show];
-			[self.scribbleView drawToTouch:_startingTouch];
-			self.startingTouch = nil;
 		} else {
 		    [self.scribbleView drawToTouch:touch];
 
@@ -56,31 +63,42 @@
 	} else if (cmd == @selector(touchesEnded:withEvent:)) {
 		self.initialKey = nil;
         [self.swipe end];
-
-        if (self.swipe.keys.count >= 2) {
+        
+        if( matchLength != -1){
+            if( key && [@".?,!:;@-" rangeOfString:key].location != NSNotFound){
+                [self deleteChar];
+                [self deleteChar];
+                [self kbinput:key];
+                [self kbinput:@" "];
+                matchLength = -1;
+            }
+        }
+        if( !([key isEqualToString:@".?123"] || [key isEqualToString:@"abc"]) )
+            matchLength = -1;
+        if (self.swipe && self.swipe.keys.count >= 2) {
             NSArray *arr = [[ISModel sharedInstance] findMatch:self.swipe];
             
             if (arr.count != 0) {
-                if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+                if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad)
                     [self deleteChar];
-                }
 				
                 [self addInput:[arr[0] word]];
 				
                 if (arr.count > 1) {
-					_suggestionsView.suggestions = arr;
 					[_suggestionsView showAnimated:YES];
+					_suggestionsView.suggestions = arr;
                 }
             }
         }
+        
+        
         [self resetSwipe];
     }
 }
 
 - (void)resetSwipe {
-	self.swipe = [[ISData alloc]init];
+	self.swipe = nil;
 	[self.scribbleView hide];
-	[self.scribbleView resetPoints];
 }
 
 - (BOOL)isSwyping {
@@ -108,20 +126,14 @@
     UIKeyboardImpl *kb = [UIKeyboardImpl activeInstance];
     
     matchLength = [input length];
-    if ([kb isShifted]) {
-        char c = [input characterAtIndex:0];
-        if (c <= 'z' && c >= 'a') {
-            [self kbinput:[NSString stringWithFormat:@"%c",[input characterAtIndex:0]-'a'+'A']];
-            if (input.length > 1) {
-				[self kbinput:[input substringFromIndex:1]];	
-            }
-        } else {
-            [self kbinput:input];
-        }
-    } else {
-        [self kbinput:input];
+    NSLog(@"%d %d %d", [kb isShifted] ,[kb isAutoShifted], [kb isShiftLocked]);
+    if( [kb isShiftLocked] ){
+        input = [input uppercaseString];
+    }else if([kb isShifted] || [kb isAutoShifted]) {
+        input = [NSString stringWithFormat:@"%@%@", [[input substringToIndex:1] uppercaseString], [input substringFromIndex:1]];
     }
-	
+    
+    [self kbinput:input];
 	[self kbinput:@" "];
 }
     

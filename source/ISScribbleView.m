@@ -12,15 +12,19 @@
 @implementation ISScribbleView
 
 - (void)show {
-	self.isVisible = YES;
+    self.alpha = 1;
     UIKeyboard *kb = [UIKeyboard activeKeyboard];
     self.frame = CGRectMake(0,0,kb.frame.size.width, kb.frame.size.height);
     [kb addSubview:self];
 }
 
 - (void)hide {
-	self.isVisible = NO;
-	[self removeFromSuperview];
+    [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.alpha = 0;
+    } completion:^(BOOL finished) {
+        [self resetPoints];
+        [self removeFromSuperview];
+    }];
 }
 
 - (void)resetPoints {

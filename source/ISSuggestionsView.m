@@ -16,19 +16,21 @@
 	[kb.superview addSubview:self];
 	self.frame = CGRectMake(0, kb.frame.origin.y-30, kb.frame.size.width, 30);
 	
+    self.alpha = 0;
 	if (animated) {
-		[UIView animateWithDuration:ANIM_LENGTH animations:^{
+        [UIView animateWithDuration:ANIM_LENGTH delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^{
 			self.alpha = 1;
-		}];
+		} completion:nil];
 	} else {
 		self.alpha = 1;
 	}
 }
 
 - (void)hideAnimated:(BOOL)animated {
+    self.alpha = 1;
 	if (animated) {
-		[UIView animateWithDuration:ANIM_LENGTH animations:^{
-			self.alpha = 1;
+		[UIView animateWithDuration:ANIM_LENGTH/2 animations:^{
+			self.alpha = 0;
 		} completion:^(BOOL finished){
 			[self removeFromSuperview];
 			[self setSuggestions:nil];
