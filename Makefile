@@ -1,6 +1,7 @@
-export TARGET=iphone:7.0
-export ARCHS=armv7 arm64 armv7s
-export SOURCE=source
+export ARCHS = armv7 arm64 armv7s
+export SOURCE = src
+export THEOS = theos
+export TARGET_IPHONEOS_DEPLOYMENT_VERSION = 5.0
 
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
