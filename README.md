@@ -1,21 +1,23 @@
 ![iSwipe](img/preview.png)
 
-OS7 is an immersive Windows Phone 7 based theme for Dreamboard on iOS.
-
+iSwipe is the first gesture-based keyboard for iOS (pre-8.0)
 
 Features
 ---------
-- Customizable start menu
-- Live tiles with html widgets
-- Hassle-free installation through DreamBoard
+- Uses objc-runtime to hook onto system keyboard methods and extend functionality
+- Converts input points into vector angles
+- Implements both a dynamic programming and greedy algorithm to match input to words
+- Best match is entered, remaining options are ranked in the suggestions box
+
+![iSwipe](img/animate.gif)
 
 Building
 ----------
 Requires Xcode and Xcode Command Line Tools.
 
 ```sh
-git clone 'https://github.com/wyndwarrior/OS7.git'
-cd OS7
+git clone 'https://github.com/wyndwarrior/iSwipe.git'
+cd iSwipe
 git submodule update --init --recursive
 make
 ```
